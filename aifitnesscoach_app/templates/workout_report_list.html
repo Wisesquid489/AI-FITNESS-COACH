@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Workout Reports</title>
+
+<style>
+body{
+    margin:0;
+    padding:40px 20px;
+    background:radial-gradient(circle at top right,#0b0f16,#020409 70%);
+    font-family:Poppins,sans-serif;
+    color:#e8ecf7;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h2{
+    margin:0;
+    font-size:28px;
+}
+
+.header p{
+    opacity:.8;
+    margin-top:6px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:22px;
+    max-width:1200px;
+    margin:auto;
+}
+
+.card{
+    background:rgba(10,16,30,.9);
+    border-radius:20px;
+    padding:20px;
+    border:1px solid rgba(0,229,255,.25);
+    box-shadow:0 0 24px rgba(0,229,255,.15);
+    transition:.25s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 0 36px rgba(0,229,255,.25);
+}
+
+.card img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+    border-radius:14px;
+    margin-bottom:14px;
+    border:1px solid rgba(0,229,255,.4);
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.CORRECT{
+    background:rgba(0,200,83,.15);
+    color:#00e676;
+    border:1px solid rgba(0,200,83,.6);
+}
+
+.INCORRECT{
+    background:rgba(244,67,54,.15);
+    color:#ff5252;
+    border:1px solid rgba(244,67,54,.6);
+}
+
+.meta{
+    font-size:14px;
+    margin:6px 0;
+}
+
+.meta strong{
+    font-weight:600;
+}
+
+.feedback{
+    margin-top:10px;
+    font-size:14px;
+    opacity:.95;
+    line-height:1.4;
+}
+
+.date{
+    margin-top:10px;
+    font-size:12px;
+    opacity:.6;
+}
+
+.empty{
+    text-align:center;
+    opacity:.7;
+    margin-top:60px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>My Workout Reports</h2>
+    <p>{{ user.name }} • {{ user.email }}</p>
+</div>
+
+{% if reports %}
+<div class="grid">
+
+{% for r in reports %}
+<div class="card">
+
+    {% if r.image %}
+        <img src="{{ r.image.url }}" alt="Workout Image">
+    {% else %}
+        <img src="https://via.placeholder.com/400x250?text=Workout+Snapshot" alt="No Image">
+    {% endif %}
+
+    <span class="badge {{ r.posture_status }}">
+        {{ r.posture_status|default:"UNKNOWN" }}
+    </span>
+
+    <div class="meta">
+        <strong>{{ r.workout_name|default:"Workout Session" }}</strong>
+    </div>
+
+    <div class="meta">
+        Confidence: <strong>{{ r.confidence_score|default:0 }}%</strong>
+    </div>
+
+    <!-- 🔁 REP OR TIME LOGIC -->
+    {% if r.duration_seconds %}
+        <div class="meta">
+            Duration: <strong>{{ r.duration_seconds }} seconds</strong>
+        </div>
+    {% else %}
+        <div class="meta">
+            Reps: <strong>{{ r.rep_count }}</strong>
+        </div>
+    {% endif %}
+
+    <div class="feedback">
+        🧠 {{ r.ai_feedback|default:"No posture feedback recorded." }}
+    </div>
+
+    <div class="date">
+        {{ r.analyzed_at|date:"d M Y, h:i A" }}
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+{% else %}
+<div class="empty">
+    <h3>No workout reports yet</h3>
+    <p>Start a workout scan to see your history here.</p>
+</div>
+{% endif %}
+
+</body>
+</html>

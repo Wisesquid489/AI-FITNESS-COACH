@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Subscription Order</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent:#ff2b2b;
+      --accent-light:#ff6b6b;
+      --muted:rgba(255,255,255,.7);
+      --bg:#0c0c0c;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Poppins,sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+      color:#fff;
+
+      /* CSS-ONLY BACKGROUND (NO IMAGE FILE) */
+      background:
+        radial-gradient(80% 60% at 50% 0%, rgba(255,43,43,.18), transparent 60%),
+        radial-gradient(60% 40% at 80% 100%, rgba(255,43,43,.12), transparent 60%),
+        linear-gradient(180deg,#030305 0%, #070708 60%);
+    }
+
+    .card{
+      max-width:420px;
+      width:100%;
+      background:rgba(12,12,12,.95);
+      border-radius:16px;
+      padding:28px;
+      text-align:center;
+      border:1px solid rgba(255,0,0,.25);
+      box-shadow:0 0 22px rgba(255,0,0,.18);
+      backdrop-filter: blur(6px);
+    }
+
+    h1{
+      color:var(--accent);
+      font-size:1.6rem;
+      font-weight:700;
+      margin-bottom:14px;
+      text-shadow:0 0 10px rgba(255,43,43,.25);
+    }
+
+    .plan{
+      font-size:1.05rem;
+      margin-bottom:6px;
+      color:#fff;
+    }
+
+    /* 💰 AMOUNT COLOR FIXED */
+    .amount{
+      font-size:1.7rem;
+      font-weight:800;
+      margin:18px 0 24px;
+      color:var(--accent);
+      text-shadow:0 0 12px rgba(255,43,43,.35);
+    }
+
+    .btn-pay{
+      background:linear-gradient(180deg,#ff3030,#e60000);
+      color:#fff;
+      padding:12px 24px;
+      border-radius:999px;
+      border:1px solid rgba(255,0,0,.35);
+      font-weight:700;
+      font-size:.95rem;
+      cursor:pointer;
+      box-shadow:0 0 14px rgba(255,0,0,.35);
+      transition:.2s ease;
+    }
+
+    .btn-pay:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 22px rgba(255,0,0,.55);
+    }
+
+    .btn-pay:active{
+      transform:translateY(0);
+      box-shadow:0 0 10px rgba(255,0,0,.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Subscription Ready</h1>
+
+    <p class="plan">
+      Plan: <strong>{{ order.plan.package_name }}</strong>
+    </p>
+
+    <div class="amount">
+      ₹{{ order.amount }}
+    </div>
+
+    <form method="post" action="{% url 'subscription_payment_view' order.id %}">
+      {% csrf_token %}
+      <input type="hidden" name="amount" value="{{ order.amount }}">
+      <button type="submit" class="btn-pay">
+        Make Payment
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>

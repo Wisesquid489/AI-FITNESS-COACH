@@ -1,0 +1,1 @@
+You have to insert your gork api key in the settings.py file for this project to work

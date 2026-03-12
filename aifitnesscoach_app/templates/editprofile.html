@@ -1,0 +1,386 @@
+<html>
+    <head><title> Edit Profile</title>
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+       <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 170vh;
+    margin: 0;
+    padding: 0;
+    background:
+      linear-gradient(rgba(0,0,0,0.75), rgba(10,0,0,0.75)),
+      url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80') center/cover fixed no-repeat;
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main Form */
+form {
+    position: relative;
+    z-index: 10;
+    width: 420px;
+    max-width: 94%;
+    background-color: rgba(12, 12, 12, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 36px 28px;
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 0, 0, 0.12);
+    border: 1px solid rgba(255, 0, 0, 0.38);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform .3s ease, box-shadow .3s ease;
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Title (uses ::before so you don't need to change HTML) */
+form::before {
+    content: "Edit Profile";
+    display: block;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ff5b5b;
+    margin-bottom: 4px;
+    text-shadow: 0 0 8px rgba(255,0,0,0.12);
+}
+
+/* Avatar preview slot (place file input above or below as needed) */
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 6px auto 4px auto;
+    display: block;
+    border: 2px solid rgba(255,0,0,0.28);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08));
+}
+
+/* Labels */
+/* LABEL — keep always above input, clear spacing */
+/* ----- Replace your current label + input/select/textarea rules with this ----- */
+
+/* LABEL — clear spacing above inputs */
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #ff8a8a;
+    margin: 10px 0 8px 0;   /* more breathing room so label doesn't overlap input */
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+}
+
+/* INPUT / SELECT / TEXTAREA — visible, full width, no clipping */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    min-height: 46px;                 /* make inputs comfortable height */
+    padding: 12px 14px;               /* left padding so text isn't on edge */
+    border-radius: 10px;
+    border: 2px solid rgba(60,60,60,0.9);
+    background-color: rgba(0, 0, 0, 0.78); /* slightly darker so text contrasts */
+    color: #ffffff;                   /* ensure typed value is visible */
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;           /* prevents unexpected clipping */
+    display: block;
+    position: relative;
+    z-index: 1;
+    /* allow text to be fully visible in input (no nowrap/ellipsis) */
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Focus state — visible ring + slight lift */
+input:focus, select:focus, textarea:focus {
+    border-color: #ff2b2b;
+    box-shadow: 0 0 12px rgba(255,0,0,0.14);
+    background-color: rgba(0,0,0,0.86);
+}
+
+/* If you use .form-row (label left, field right), ensure field column expands */
+.form-row .field-col input,
+.form-row .field-col select,
+.form-row .field-col textarea {
+    width: 100%;
+    min-width: 0;
+}
+
+/* also ensure file input is readable */
+input[type="file"] {
+    background-color: rgba(12,12,12,0.55);
+}
+
+
+/* Prevent long text from overflowing its container (wrap/ellipsis handled) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Focus state — visible ring + slight lift */
+input:focus, select:focus, textarea:focus {
+    border-color: #ff2b2b;
+    box-shadow: 0 0 12px rgba(255,0,0,0.16);
+    background-color: rgba(0,0,0,0.85);
+}
+
+/* If you used .form-row (label on left, input on right) ensure input column expands */
+.form-row .field-col input,
+.form-row .field-col select,
+.form-row .field-col textarea {
+    width: 100%;
+    min-width: 0; /* allows flexbox to shrink/grow properly */
+}
+
+/* File input special */
+input[type="file"] {
+    padding: 8px 10px;
+    background-color: rgba(15,15,15,0.6);
+    border-style: dashed;
+}
+
+/* Select arrow */
+select {
+    appearance: none;
+    padding-right: 36px;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #ff6060 50%),
+      linear-gradient(135deg, #ff6060 50%, transparent 50%);
+    background-position: calc(100% - 14px) calc(1em + 2px), calc(100% - 8px) calc(1em + 2px);
+    background-size: 8px 8px, 8px 8px;
+    background-repeat: no-repeat;
+}
+
+/* Focus state */
+input:focus, select:focus, textarea:focus {
+    border-color: #ff2b2b;
+    box-shadow: 0 0 12px rgba(255,0,0,0.16);
+    transform: translateZ(0);
+}
+
+/* Row layout for label + input (if you want label left and input right) */
+.form-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+}
+.form-row .label-col {
+    width: 120px;
+    min-width: 120px;
+    color: #ff8a8a;
+    font-weight: 600;
+    text-align: left;
+}
+.form-row .field-col {
+    flex: 1;
+}
+
+/* Button */
+button, input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(180deg, #ff3030, #e60000);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform .12s ease, box-shadow .12s ease;
+    box-shadow: 0 10px 28px rgba(230,0,0,0.12);
+}
+button:hover, input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(230,0,0,0.18);
+}
+
+/* Small helper text */
+.input-help {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+    form { width: 94%; padding: 26px; }
+    .form-row { flex-direction: column; }
+    .form-row .label-col { width: 100%; min-width: auto; }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes titlePulse {
+    0%   { text-shadow: 0 0 6px rgba(255,0,0,0.16); }
+    50%  { text-shadow: 0 0 14px rgba(255,0,0,0.32); }
+    100% { text-shadow: 0 0 6px rgba(255,0,0,0.16); }
+}
+form::before { animation: titlePulse 2.2s infinite ease-in-out; }
+@keyframes btnPulse {
+    0%   { transform: scale(1); box-shadow: 0 8px 18px rgba(255,0,0,0.12); }
+    50%  { transform: scale(1.02); box-shadow: 0 16px 36px rgba(255,0,0,0.18); }
+    100% { transform: scale(1); box-shadow: 0 8px 18px rgba(255,0,0,0.12); }
+}
+button { animation: btnPulse 3s infinite ease-in-out; }
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+/* ---------- Force-visible inputs (paste this at the end of your <style>) ---------- */
+
+/* make inputs definitely visible and above decorations */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select,
+input[type="file"] {
+  color: #ffffff !important;                    /* visible text */
+  -webkit-text-fill-color: #ffffff !important;  /* Safari/Chrome */
+  background-color: rgba(0,0,0,0.78) !important;
+  border-color: rgba(80,80,80,0.9) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.45) inset !important;
+  padding: 12px 14px !important;
+  min-height: 44px !important;
+  height: auto !important;
+  font-size: 1rem !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  z-index: 9999 !important;                      /* sit above decorations */
+}
+
+/* strongly target autofill text color (Chrome) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff !important;
+  box-shadow: 0 0 0px 1000px rgba(0,0,0,0.78) inset !important;
+}
+
+/* show caret and selection properly */
+input, textarea { caret-color: #ffb3b3 !important; }
+input::selection, textarea::selection { background: rgba(255,43,43,0.25) !important; color: #fff !important; }
+
+/* ensure placeholder is visible too */
+::placeholder { color: rgba(255,255,255,0.45) !important; }
+
+/* ensure read-only inputs are still readable */
+input[readonly], input[disabled] { color: #fff !important; opacity: 1 !important; }
+
+/* If an overlay pseudo-element is covering inputs, temporarily hide it for debugging */
+/* Remove or comment this after confirming inputs visible */
+*::before, *::after { pointer-events: auto; }
+/* (If you have a specific pseudo-element like form::after causing cover, set it to none)
+form::after, form::before { pointer-events: none !important; } 
+*/
+
+/* optional: force left text alignment for values inside inputs */
+input[type="text"], input[type="email"], input[type="password"] { text-align: left !important; }
+.back-btn{
+    text-decoration: none;
+    color:#fff;
+    position: absolute;
+    top: 20px;
+    left:20px;
+
+    
+}
+
+/* small responsive tweak */
+@media (max-width:480px) {
+  input[type="text"], input[type="email"], input[type="password"], textarea { font-size: .98rem !important; padding: 11px 12px !important; }
+}
+
+</style>
+
+</head>
+    <body>
+        <form method="POST" enctype="multipart/form-data">
+    <a href="/profile/" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+    {% csrf_token %}
+
+    <!-- Name: required, max 100 chars -->
+    <label>Name</label>
+    <input type="text" name="name" value="{{ user.name }}" maxlength="100" required>
+
+    <!-- Age: required, number 10-100 -->
+    <label>Age</label>
+    <input type="number" name="age" min="10" max="100" value="{{ user.age }}" required>
+
+    <!-- Email: read-only -->
+    <label>Email</label>
+    <input type="email" name="email" value="{{ user.email }}"  required>
+
+    <!-- Password: required, min 6, max 30 -->
+    <label>Password</label>
+    <input type="password" name="password" value="{{ user.password }}" minlength="6" maxlength="30" required>
+
+    <!-- Gender: required -->
+    <label>Gender</label>
+    <select name="gender" required>
+        <option value="">--Select--</option>
+        <option value="male" {% if user.gender == "male" %}selected{% endif %}>Male</option>
+        <option value="female" {% if user.gender == "female" %}selected{% endif %}>Female</option>
+        <option value="others" {% if user.gender == "others" %}selected{% endif %}>Others</option>
+    </select>
+
+    <!-- Height: required, number 1-251 -->
+    <label>Height (cm)</label>
+    <input type="number" name="height" min="1" max="251" value="{{ user.height }}" required>
+
+    <!-- Weight: required, number 10-640 -->
+    <label>Weight (kg)</label>
+    <input type="number" name="weight" min="10" max="640" value="{{ user.weight }}" required>
+
+    <!-- Image: optional, only image files -->
+    <label>Image</label>
+    <input type="file" name="image" accept="image/*">
+
+    <!-- Fitness Goal: required -->
+    <label>Fitness Goal</label>
+    <select name="fitnessgoal" required>
+        <option value="">--Select--</option>
+        <option value="musclebuilding" {% if user.fitnessgoal == "musclebuilding" %}selected{% endif %}>Muscle Building</option>
+        <option value="weightloss" {% if user.fitnessgoal == "weightloss" %}selected{% endif %}>Weight Loss</option>
+        <option value="weightgain" {% if user.fitnessgoal == "weightgain" %}selected{% endif %}>Weight Gaining</option>
+        <option value="bodybuilding" {% if user.fitnessgoal == "bodybuilding" %}selected{% endif %}>BodyBuilding Competition</option>
+        <option value="fitness" {% if user.fitnessgoal == "fitness" %}selected{% endif %}>General Fitness</option>
+    </select>
+
+    <button type="submit">Save</button>
+</form>
+
+    </body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard</title>
+
+  <!-- Styles: red/black gym theme matching previous pages -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root{
+      --bg-dark: #060507;
+      --panel: rgba(12,12,12,0.92);
+      --accent: #ff2b2b;
+      --accent-2: #ff6b6b;
+      --muted: rgba(255,255,255,0.75);
+      --glass-blur: 10px;
+      --sidebar-w: 260px;
+      --radius: 12px;
+    }
+
+    *{ box-sizing: border-box; margin:0; padding:0; }
+    html,body{ height:100%; font-family:'Poppins',system-ui,-apple-system; -webkit-font-smoothing:antialiased; background:
+      linear-gradient(180deg,#030305 0%, #070708 60%);
+      color:#fff; }
+
+    /* Page layout */
+    .app {
+      min-height:100vh;
+      display:flex;
+      gap:28px;
+      align-items:stretch;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+      border-right: 1px solid rgba(255,0,0,0.06);
+      padding: 26px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      backdrop-filter: blur(var(--glass-blur));
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:6px;
+    }
+    .brand .logo {
+      width:44px; height:44px; border-radius:10px;
+      background: linear-gradient(180deg,var(--accent),var(--accent-2));
+      display:grid; place-items:center; font-weight:700; color:#fff;
+      box-shadow: 0 6px 18px rgba(255,43,43,0.12);
+    }
+    .brand h1{ font-size:1.1rem; color:var(--accent); letter-spacing:0.4px; margin:0; }
+
+    .nav {
+      display:flex; flex-direction:column; gap:8px; margin-top:6px;
+    }
+    .nav a {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 12px;
+      border-radius:10px;
+      color: var(--muted);
+      text-decoration:none;
+      font-weight:600;
+      transition: background .12s ease, transform .12s ease, color .12s ease;
+      border: 1px solid transparent;
+    }
+    .nav a:hover {
+      background: linear-gradient(90deg, rgba(255,43,43,0.04), rgba(139,44,255,0.02));
+      color: #fff;
+      transform: translateX(4px);
+      border-color: rgba(255,0,0,0.06);
+    }
+    .nav a.active {
+      background: linear-gradient(90deg, rgba(255,43,43,0.08), rgba(255,43,43,0.02));
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(255,0,0,0.06) inset;
+    }
+
+    .sidebar .spacer { flex:1; }
+
+    .logout {
+      display:block;
+      margin-top:auto;
+      padding:10px 12px;
+      background:rgb(107, 4, 4);
+      border-radius:10px;
+      border:1px solid rgba(40, 26, 26, 0.04);
+      color:var(--muted);
+      text-decoration:none;
+      text-align:center;
+    }
+    .logout:hover { color:#fff; background: rgba(135, 22, 22, 0.04); }
+
+    /* Main area */
+    .main {
+      flex:1;
+      padding: 28px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      align-items:stretch;
+    }
+
+    /* Top bar */
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .search {
+      flex:1;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      max-width:720px;
+    }
+    .search input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:2px solid rgba(60,60,60,0.9);
+      background:rgba(0,0,0,0.6);
+      color:#fff;
+      outline:none;
+    }
+    .userbox {
+      display:flex; gap:12px; align-items:center;
+    }
+    .user-avatar {
+      width:44px; height:44px; border-radius:8px; object-fit:cover;
+      border:2px solid rgba(255,255,255,0.04);
+    }
+
+    /* Dashboard grid */
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap:18px;
+      margin-top:6px;
+    }
+
+    /* Card style */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+      border-radius: var(--radius);
+      padding:18px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .card h3 { margin:0; color:var(--accent); font-size:0.98rem; }
+    .stat {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .stat .value {
+      font-size:1.6rem; font-weight:700; color:#fff;
+    }
+    .stat .meta { font-size:0.88rem; color:var(--muted); }
+
+    /* List area for manage users/feedbacks (placeholder table) */
+    .table {
+      width:100%;
+      border-collapse:collapse;
+      margin-top:8px;
+    }
+    .table thead th {
+      text-align:left;
+      padding:10px 12px;
+      color:var(--muted);
+      font-weight:700;
+      font-size:0.85rem;
+    }
+    .table tbody td {
+      padding:12px; background:rgba(12,12,12,0.55);
+      border-top:1px solid rgba(255,255,255,0.02);
+      font-size:0.95rem;
+    }
+
+    /* small action button */
+    .btn {
+      padding:8px 12px; border-radius:8px; background:linear-gradient(180deg,#ff3030,#e60000);
+      color:#fff; border:none; font-weight:700; cursor:pointer;
+    }
+
+    /* Responsive: collapse sidebar to top on small screens */
+    @media (max-width:880px){
+      .app{ flex-direction:column; }
+      .sidebar{ width:100%; display:flex; flex-direction:row; gap:12px; padding:12px; overflow:auto; }
+      .sidebar .nav{ flex-direction:row; gap:8px; }
+      .main{ padding:14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Admin navigation">
+      <div class="brand">
+        <div class="logo">AD</div>
+        <h1>Admin</h1>
+      </div>
+
+      <nav class="nav" aria-label="Main">
+        <a href="/userlist/" class="active">👥 Manage Users</a>
+        <a href="/workouttips/">➕ Add Workout Tips</a>
+        <a href="/workouttipslist/"> 💪View Workout Tips</a>
+        <a href="/feedback_list/">💬 Manage Feedbacks</a>
+        <a href="/subscriptionplan/">📢 Add Subscription </a>
+        <a href="/adminsubscription/">👀 View Subscription </a>
+        
+       
+      </nav>
+
+      <div class="spacer"></div>
+
+      <a href="/logout/" class="logout" onclick="return confirm('Are you sure?');">Logout</a>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="topbar">
+        
+        
+      </div>
+
+      <!-- Dashboard Cards -->
+      <section class="grid" aria-live="polite">
+        <div class="card">
+          <h3>Total Users</h3>
+          <div class="stat">
+            <div>
+              <div class="value" id="total-users">{{ users.count }}</div>
+              <div class="meta">Registered users</div>
+            </div>
+            <div style="align-self:center;">
+              
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Total Feedbacks</h3>
+          <div class="stat">
+            <div>
+              <div class="value" id="total-feedbacks">{{ feedbacks.count }}</div>
+              <div class="meta">User feedback items</div>
+            </div>
+            <div style="align-self:center;">
+             
+            </div>
+          </div>
+        </div>
+
+        <!-- Example extra cards you can populate -->
+        <div class="card">
+          <h3>Active Today</h3>
+          <div class="stat">
+            <div>
+              <div class="value">{{users_today.count}}</div>
+              <div class="meta">Logged in today</div>
+            </div>
+            <div>
+              
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+  <h3>Revenue</h3>
+  <div class="stat">
+    <div>
+      <div class="value">₹ {{ revenue }}</div>
+      <div class="meta">Total Successful Payments</div>
+    </div>
+  </div>
+</div>
+
+
+      <!-- Manage Users Section (simple table placeholder) -->
+      
+
+      
+
+    </main>
+  </div>
+
+  <!-- Minimal script for demo: you can replace counts with real data from backend -->
+  <script>
+    // Example: you could fetch real counts from an API and update DOM
+    // document.getElementById('total-users').textContent = fetchedUsersCount;
+    // document.getElementById('total-feedbacks').textContent = fetchedFeedbacksCount;
+  </script>
+</body>
+</html>

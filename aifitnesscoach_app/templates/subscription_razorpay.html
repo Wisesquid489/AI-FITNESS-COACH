@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pay Subscription</title>
+
+  <!-- REQUIRED Razorpay script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+<script>
+var options = {
+  "key": "{{ api_key }}",
+  "amount": "{{ amount }}",
+  "currency": "INR",
+  "order_id": "{{ razorpay_order_id }}",
+
+  /* ✅ PAYMENT SUCCESS */
+  "handler": function (response) {
+    window.location.href = "/subscription_payment_success/{{ order.id }}/";
+  },
+
+  /* ✅ HANDLE EXIT / CLOSE (THIS FIXES BLANK PAGE) */
+  "modal": {
+    "confirm_close": true,
+    "ondismiss": function () {
+      // redirect user back to subscription plans
+      window.location.href = "/usersubscription/";
+    }
+  },
+
+  /* OPTIONAL but good UX */
+  "prefill": {
+    "name": "{{ order.user.Edwin }}",
+    "email": "{{ order.user.email }}"
+  },
+
+  /* Match your theme */
+  "theme": {
+    "color": "#ff2b2b"
+  }
+};
+
+/* REQUIRED */
+var rzp = new Razorpay(options);
+rzp.open();
+</script>
+</body>
+</html>

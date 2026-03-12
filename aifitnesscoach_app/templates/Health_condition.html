@@ -1,0 +1,430 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diet Recommendation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent: #ff2b2b;
+      --accent-light: #ff6b6b;
+      --muted: rgba(255,255,255,0.75);
+      --bg: #0c0c0c;
+    }
+    
+
+    *{ box-sizing: border-box; margin:0; padding:0; font-family:'Poppins',sans-serif; }
+    html,body { height:100%; }
+    body{
+      background: linear-gradient(180deg,#030305 0%, #070708 60%);
+      color:#fff;
+      padding:30px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .visually-hidden{
+      position:absolute!important;
+      height:1px;width:1px;overflow:hidden;
+      clip:rect(1px,1px,1px,1px);
+      white-space:nowrap;border:0;padding:0;margin:-1px;
+    }
+    
+    /* keep visible overflow so native dropdowns can render above */
+    #manage-users {
+      border: 1px solid rgba(255,0,0,0.25);
+      box-shadow: 0 0 15px rgba(255,0,0,0.12);
+      border-radius: 12px;
+      padding: 20px;
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(6px);
+      max-width: 1100px;
+      margin: auto;
+      overflow: visible; /* ADDED: allow dropdown to overflow container */
+      position: relative;
+    }
+
+    .title-row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    #manage-users h3{
+      font-size:1.6rem;
+      font-weight:700;
+      color:var(--accent);
+      text-shadow:0 0 12px rgba(255,0,0,0.15);
+      margin:0;
+    }
+
+    .controls {
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    /* hide the email search control (user asked to remove it) */
+    .controls { display: none; }
+
+    input#search {
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: #fff;
+      font-size:0.95rem;
+      min-width:180px;
+    }
+    input#search::placeholder { color: rgba(255,255,255,0.45); }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      margin-top:12px;
+      position: relative;
+    }
+
+    label{
+      display:block;
+      font-size:0.85rem;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:600;
+    }
+
+    .input, select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color:#fff;
+      font-size:0.95rem;
+    }
+
+    /* ensure native select dropdown sits above everything */
+    select.input {
+      position: relative;
+      z-index: 9999; /* ADDED: bring select to front */
+    }
+
+    .full-width{ grid-column: 1 / -1; }
+
+    .submit-row{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      margin-top:18px;
+    }
+
+    .btn-primary{
+      background:linear-gradient(180deg,#ff3030,#e60000);
+      border:1px solid rgba(255,0,0,0.25);
+      box-shadow:0 0 8px rgba(255,0,0,0.12);
+      color:#fff;
+      padding:10px 16px;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    /* Cancel button style (was missing) - matches earlier 'btn-edit' look */
+    .btn-edit{
+      display:inline-block;
+      padding:10px 16px;
+      border-radius:8px;
+      font-size:0.95rem;
+      font-weight:700;
+      text-decoration:none;
+      transition:0.18s ease;
+      color:#fff;
+      cursor:pointer;
+      border:0;
+      background:linear-gradient(180deg,#444,#222);
+      border:1px solid rgba(255,255,255,0.06);
+      box-shadow:0 0 6px rgba(0,0,0,0.4);
+    }
+    .btn-edit:hover{ transform:translateY(-2px); box-shadow:0 0 12px rgba(255,255,255,0.08); }
+
+    .panel-left{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .thumb {
+      display:inline-block;
+      width:96px;
+      height:96px;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.04);
+      background:rgba(255,255,255,0.02);
+      flex-shrink:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* if image fails to load, show a subtle placeholder text inside the same box */
+    
+    
+
+    .intro{
+      color:var(--muted);
+      font-size:0.95rem;
+      line-height:1.45;
+    }
+
+    .helper-note{ color: rgba(255,255,255,0.6); font-size:0.85rem; margin-top:6px; }
+
+    @media (max-width: 880px){
+      .form-grid{ grid-template-columns: 1fr; }
+      .thumb { width:80px; height:80px; }
+    }
+
+    /* Fullscreen Image Modal */
+    .img-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding-top: 60px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.9);
+    }
+
+    .img-modal .modal-content {
+      margin: auto;
+      display: block;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,0,0,0.4);
+    }
+    /* ---------- Native select + options: dark / black dropdown ---------- */
+select.input {
+  background: #000 !important;          /* select background */
+  color: #fff !important;               /* selected text color */
+  -webkit-appearance: menulist-button;  /* keep native look on WebKit */
+  appearance: menulist-button;
+}
+
+/* Attempt to style the option list (most browsers will apply color/bg) */
+select.input option {
+  background-color: #000 !important;    /* option background */
+  color: #fff !important;               /* option text */
+}
+
+/* Hover / highlight inside options (where supported) */
+select.input option:hover {
+  background-color: #111 !important;
+  color: #fff !important;
+}
+
+/* For some Windows/chrome quirks — keep chevron visible on dark bg */
+select.input::-ms-expand { filter: invert(1); }
+
+/* ensure the select list is above other layers (keeps previous fix) */
+select.input {
+  position: relative !important;
+  z-index: 2147483647 !important;
+}
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .close-modal:hover { color: #ff4d4d; }
+
+    .back-btn {
+    position: fixed;  /* stays in top-left corner */
+    top: 20px;
+    left: 20px;
+    color: white;     /* white arrow and text */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* space between arrow and text */
+}
+.back-btn:hover {
+    color: #ff6b6b; /* optional hover color */
+}
+
+
+  </style>
+</head>
+<body>
+    <a href="/home/" class="back-btn">← Back</a>
+
+
+  <div id="manage-users">
+    <div class="title-row">
+      <div class="panel-left">
+        <!--<div class="thumb" id="thumb-wrapper">
+          <img src="{% static 'images/health-thumb.jpg' %}" alt="Health" id="thumb-img"
+               onerror="this.style.display='none'; document.getElementById('thumb-wrapper').classList.add('no-img');">
+        </div>-->
+        <div>
+          <h3>Diet Recommendation</h3>
+          <p class="intro">Fill this short form so our system can tailor workout & diet suggestions. Your privacy is respected.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="search" placeholder="Search user by email..." />
+      </div>
+    </div>
+
+    <form method="post" action="" novalidate>
+      {% csrf_token %}
+      <div class="form-grid">
+        <div>
+          <label for="age">Age</label>
+          <input class="input" type="number" name="age" id="age" value="{{ user.age|default_if_none:'' }}" placeholder="e.g. 21" />
+        </div>
+        <div>
+          <label for="gender">Gender</label>
+<select class="input" name="gender" id="gender" required>
+  <option value="">--Select--</option>
+  <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+  <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+</select>
+
+        </div>
+
+        <div>
+          <label for="fitnessgoal">Fitness Goal</label>
+<select class="input" name="fitnessgoal" id="fitnessgoal" required>
+  <option value="">--Select--</option>
+  <option value="musclebuilding" {% if user.fitnessgoal == 'musclebuilding' %}selected{% endif %}>Muscle Building</option>
+  <option value="weightloss" {% if user.fitnessgoal == 'weightloss' %}selected{% endif %}>Weight Loss</option>
+  <option value="weightgain" {% if user.fitnessgoal == 'weightgain' %}selected{% endif %}>Weight Gaining</option>
+  <option value="bodybuilding" {% if user.fitnessgoal == 'bodybuilding' %}selected{% endif %}>Bodybuilding Competition</option>
+  <option value="fitness" {% if user.fitnessgoal == 'fitness' %}selected{% endif %}>General Fitness</option>
+</select>
+
+        </div>
+
+        <div>
+          <label for="weight">Current Weight (kg)</label>
+          <input class="input" type="text" name="weight" id="weight" value="{{ user.weight }}" placeholder="e.g. 68" />
+        </div>
+
+        <div>
+          <label for="height">Current Height (cm)</label>
+          <input class="input" type="text" name="height" id="height" value="{{ user.height }}" placeholder="e.g. 172" />
+        </div>
+
+        <div>
+          <label for="fat">Body Fat (%)</label>
+          <input class="input" type="text" name="fat" id="fat" placeholder="optional" />
+        </div>
+
+        <div>
+          <label for="cholesterol">Cholesterol</label>
+          <input class="input" type="text" name="cholesterol" id="cholesterol" placeholder="optional" />
+        </div>
+
+        <div>
+          <label for="sugar">Blood Sugar</label>
+          <input class="input" type="text" name="sugar" id="sugar" placeholder="optional" />
+        </div>
+
+        <div>
+          <label for="injuries">Injuries / Musculoskeletal Issues</label>
+          <select class="input" name="injuries" id="injuries">
+            <option value="" selected>None / Not applicable</option>
+            <option value="back_pain">Back Pain / Disc Bulge</option>
+            <option value="shoulder_impingement">Shoulder Impingement</option>
+            <option value="knee_pain">Knee Pain / ACL</option>
+            <option value="neck_pain">Neck Pain</option>
+            <option value="tendonitis">Tendonitis / Tendinopathy</option>
+            <option value="muscle_strain">Muscle Strain / Tear</option>
+            <option value="other">Other (describe below)</option>
+          </select>
+        </div>
+
+        <div class="full-width">
+          <label for="injuries_text">If "Other", describe injury / condition</label>
+          <textarea name="injuries_text" id="injuries_text" class="input" rows="3" placeholder="e.g. L4-L5 disc bulge, right knee meniscus tear"></textarea>
+          <p class="helper-note">Tip: choose a predefined option for quick filtering; add details if you want personalized rehab suggestions.</p>
+        </div>
+
+        <div class="full-width">
+          <label for="ai_suggestions">Notes / Additional Info (optional)</label>
+          <textarea name="ai_notes" id="ai_notes" class="input" rows="3" placeholder="Any other medical info, allergies, medications..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="submit-row">
+        <a href="{% url 'home' %}" class="btn-edit">Cancel</a>
+        <button type="submit" class="btn-primary">Save & Get Suggestions</button>
+      </div>
+    </form>
+
+  </div>
+
+  <!-- Image modal -->
+  <div id="imgModal" class="img-modal">
+    <span class="close-modal" id="closeModal">&times;</span>
+    <img class="modal-content" id="modalImg">
+  </div>
+
+  <script>
+    // Thumbnail click -> open modal
+    const thumb = document.getElementById('thumb-img');
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const closeModal = document.getElementById('closeModal');
+
+    thumb && thumb.addEventListener('click', function(){
+      if(this.style.display === 'none') return; // if image hidden, don't open
+      modal.style.display = 'block';
+      modalImg.src = this.src;
+    });
+    closeModal && closeModal.addEventListener('click', function(){ modal.style.display = 'none'; });
+    window.addEventListener('click', function(e){ if(e.target == modal) modal.style.display = 'none'; });
+
+    // If the injuries select is "other", copy text from textarea to posted injuries field before submit
+    const form = document.querySelector('form');
+    form && form.addEventListener('submit', function(e){
+      const injuriesSel = document.getElementById('injuries');
+      const injuriesText = document.getElementById('injuries_text');
+
+      // If user chose "other", replace injuries value with typed text
+      if(injuriesSel.value === 'other' && injuriesText.value.trim() !== ''){
+        // create a hidden input to send the descriptive injury
+        let hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'injuries';
+        hidden.value = injuriesText.value.trim();
+        form.appendChild(hidden);
+      }
+    });
+  </script>
+</body>
+</html>

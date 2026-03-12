@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Submit Feedback</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --accent: #ff2b2b;
+    --accent-light: #ff6b6b;
+    --panel: rgba(12, 12, 12, 0.92);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    padding: 30px;
+    background:
+      linear-gradient(rgba(0,0,0,0.75), rgba(10,0,0,0.75)),
+      url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80')
+      center/cover fixed no-repeat;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1, h3 {
+    color: var(--accent-light);
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(255,0,0,0.25);
+}
+
+h3::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 4px;
+    border-radius: 4px;
+}
+
+form {
+    width: 100%;
+    padding: 25px;
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    border: 1px solid rgba(255,0,0,0.25);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 18px rgba(255,0,0,0.15);
+    margin-top: 20px;
+}
+
+.stars {
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.stars i {
+    font-size: 2rem;
+    color: gray;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.stars i.selected {
+    color: gold;
+    text-shadow: 0 0 12px rgba(255,215,0,0.6);
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid rgba(60,60,60,0.9);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    resize: vertical;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(255,0,0,0.25);
+}
+
+button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(180deg, #ff3030, #e60000);
+    border: none;
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255,0,0,0.25);
+}
+
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+
+    padding: 8px 16px;
+    border-radius: 999px;
+
+    background: linear-gradient(180deg, #ff3030, #e60000);
+    color: #fff;
+
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    box-shadow: 0 0 14px rgba(255, 0, 0, 0.35);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 22px rgba(255, 0, 0, 0.55);
+    color: #fff;
+}
+
+.back-btn::before {
+    content: "←";
+    font-size: 1rem;
+}
+
+</style>
+</head>
+<body>
+
+    
+    <a href="/user_feedback_list/" class="back-btn">Feedback List</a>
+
+<div class="page-container">
+    <h1>📝 Submit Your Feedback</h1>
+    <p>Your opinion helps us improve</p>
+
+    <form method="POST" action="/addfeedback/" onsubmit="return validateFeedback()">
+        {% csrf_token %}
+
+        <h3>Rate the Website:</h3>
+        <input type="hidden" id="website_rating" name="website_rating" value="0">
+        <div class="stars" id="websiteStars">
+            <i data-value="1">★</i>
+            <i data-value="2">★</i>
+            <i data-value="3">★</i>
+            <i data-value="4">★</i>
+            <i data-value="5">★</i>
+        </div>
+
+        <h3>Rate the Workout:</h3>
+        <input type="hidden" id="workout_rating" name="workout_rating" value="0">
+        <div class="stars" id="workoutStars">
+            <i data-value="1">★</i>
+            <i data-value="2">★</i>
+            <i data-value="3">★</i>
+            <i data-value="4">★</i>
+            <i data-value="5">★</i>
+        </div>
+
+        <h3>Comment:</h3>
+        <textarea name="comment" placeholder="Write your feedback..." maxlength="500"></textarea>
+
+        <button type="submit">Submit Feedback</button>
+    </form>
+</div>
+
+<script>
+// Star rating functionality
+function setupStarRating(starContainerId, hiddenInputId) {
+    const stars = document.querySelectorAll(`#${starContainerId} i`);
+    const ratingInput = document.getElementById(hiddenInputId);
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'));
+            ratingInput.value = value;
+
+            stars.forEach(s => {
+                s.classList.toggle('selected', parseInt(s.getAttribute('data-value')) <= value);
+            });
+        });
+    });
+}
+
+// Initialize star ratings
+setupStarRating("websiteStars", "website_rating");
+setupStarRating("workoutStars", "workout_rating");
+
+// Form validation
+function validateFeedback() {
+    const websiteRating = parseInt(document.getElementById('website_rating').value);
+    const workoutRating = parseInt(document.getElementById('workout_rating').value);
+
+    if (!websiteRating || websiteRating < 1 || websiteRating > 5) {
+        alert("Please rate the website (1-5 stars).");
+        return false;
+    }
+    if (!workoutRating || workoutRating < 1 || workoutRating > 5) {
+        alert("Please rate the workout (1-5 stars).");
+        return false;
+    }
+    return true;
+}
+</script>
+</body>
+</html>

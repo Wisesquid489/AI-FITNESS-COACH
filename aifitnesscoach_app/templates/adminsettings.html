@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#ff2b2b;
+  --accent-light:#ff6b6b;
+  --panel:rgba(12,12,12,0.92);
+  --muted:rgba(255,255,255,0.7);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;}
+
+body{
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(0,0,0,0.75), rgba(10,0,0,0.75)),
+    url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80')
+    center/cover fixed no-repeat;
+  color:#fff;
+  padding:40px;
+}
+
+.settings-container{
+  max-width:900px;
+  margin:auto;
+  background:var(--panel);
+  border-radius:16px;
+  padding:28px;
+  border:1px solid rgba(255,0,0,0.25);
+  box-shadow:0 0 25px rgba(255,0,0,0.15);
+}
+
+.settings-header{
+  font-size:1.8rem;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:20px;
+  text-shadow:0 0 12px rgba(255,0,0,0.25);
+}
+
+.section{
+  margin-bottom:26px;
+}
+
+.section h4{
+  margin-bottom:14px;
+  font-size:1.1rem;
+  color:#ff8a8a;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:14px;
+}
+
+.form-group label{
+  font-size:0.9rem;
+  color:var(--muted);
+}
+
+.form-group input,
+.form-group select{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(0,0,0,0.6);
+  color:#fff;
+}
+
+.toggle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+}
+
+.toggle span{
+  color:var(--muted);
+}
+
+.toggle input{
+  transform:scale(1.2);
+  accent-color:var(--accent);
+}
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+.btn{
+  padding:10px 18px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  border:none;
+}
+
+.btn-save{
+  background:linear-gradient(180deg,#ff3030,#e60000);
+  color:#fff;
+  box-shadow:0 0 15px rgba(255,0,0,0.3);
+}
+
+.btn-cancel{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;
+}
+
+.btn-save:hover{transform:translateY(-2px);}
+.btn-cancel:hover{background:rgba(255,255,255,0.05);}
+</style>
+</head>
+
+<body>
+
+<form method="POST" class="settings-container">
+    {% csrf_token %}
+  <div class="settings-header">Admin Settings</div>
+
+  <!-- Account Settings -->
+  <div class="section">
+    <h4>Account Settings</h4>
+    <div class="form-group">
+      <label>Admin Username</label>
+      <input type="text" name="admin_username" value="{{ settings.admin_username }}">
+    </div>
+    <div class="form-group">
+      <label>Change Password</label>
+      <input type="password" placeholder="New password">
+    </div>
+  </div>
+
+  <!-- Dashboard Preferences -->
+  <div class="section">
+    <h4>Dashboard Preferences</h4>
+    <div class="toggle">
+      <span>Enable Dark Mode</span>
+      <input type="checkbox" name="dark_mode" {% if settings.dark_mode %}checked{% endif %}>
+
+    </div>
+    <div class="toggle">
+      <span>Enable Animations</span>
+      <input type="checkbox" name="animations" {% if settings.animations %}checked{% endif %}>
+
+    </div>
+  </div>
+
+  
+
+  <!-- System Controls -->
+  <div class="section">
+    <h4>System Controls</h4>
+    <div class="toggle">
+      <span>Maintenance Mode</span>
+      <input type="checkbox" name="maintenance_mode" {% if settings.maintenance_mode %}checked{% endif %}>
+
+    </div>
+    <div class="toggle">
+      <span>Allow New Registrations</span>
+     <input type="checkbox" name="allow_registration" {% if settings.allow_registration %}checked{% endif %}>
+
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+        <a href="{% url 'adminhome' %}" class="btn btn-cancel">Cancel</a>
+        <button type="submit" class="btn btn-save">Save Changes</button>
+    </div>
+</div>
+
+</body>
+</html>

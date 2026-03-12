@@ -1,0 +1,175 @@
+<html>
+    <head><title> Login</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* { box-sizing: border-box; }
+
+/* Static background */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background:
+      linear-gradient(rgba(0,0,0,0.75), rgba(10,0,0,0.75)),
+      url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80')
+      center/cover fixed no-repeat;
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main Form */
+form {
+    position: relative;
+    z-index: 10;
+    width: 360px;
+    max-width: 90%;
+    background-color: rgba(12, 12, 12, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 40px 32px 32px;
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 0, 0, 0.12);
+    border: 1px solid rgba(255, 0, 0, 0.38);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+/* Card Hover Lift */
+form:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 26px 60px rgba(0,0,0,0.65), 0 0 35px rgba(255,0,0,0.22);
+}
+
+/* Title Animation */
+form::before {
+    content: "Welcome Back ";
+    display: block;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ff5b5b;
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.15);
+    position: relative;
+    z-index: 10001;
+    animation: titlePulse 2.2s infinite ease-in-out;
+}
+
+/* Labels (with slide-in animation) */
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #ff8a8a;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: slideLabel 0.6s ease forwards;
+}
+
+/* Stagger timing for labels */
+label:nth-of-type(1) { animation-delay: 0.10s; }
+label:nth-of-type(2) { animation-delay: 0.18s; }
+
+/* Inputs */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid rgba(60, 60, 60, 0.9);
+    background-color: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    border-color: #ff2b2b;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.18);
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(180deg, #ff3030, #e60000);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform .12s ease, box-shadow .12s ease;
+    animation: btnPulse 1.8s infinite ease-in-out;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(230, 0, 0, 0.18);
+}
+
+/* --- ANIMATIONS --- */
+
+/* Form Fade-In */
+form {
+    animation: fadeIn 0.8s ease-out;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Title Neon Pulse */
+@keyframes titlePulse {
+    0%   { text-shadow: 0 0 8px rgba(255, 0, 0, 0.2); }
+    50%  { text-shadow: 0 0 18px rgba(255, 0, 0, 0.45); }
+    100% { text-shadow: 0 0 8px rgba(255, 0, 0, 0.2); }
+}
+
+/* Button Soft Pulse */
+@keyframes btnPulse {
+    0%   { transform: scale(1); box-shadow: 0 0 10px rgba(255,0,0,0.25); }
+    50%  { transform: scale(1.03); box-shadow: 0 0 20px rgba(255,0,0,0.45); }
+    100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,0,0,0.25); }
+}
+
+/* Label slide-in */
+@keyframes slideLabel {
+    0%   { opacity: 0; transform: translateX(-10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    form {
+        width: 94%;
+        padding: 28px 20px;
+        gap: 12px;
+    }
+    form::before {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+        </head>
+    <body>
+        <form method="POST" >
+             {% csrf_token %}
+            <label > Email</label>
+            <input type="email" name="email" required>
+            <label > Password</label>
+            <input type="password" name="password" required>
+            <button type="submit" >Submit</button>
+        </form>
+    </body>
+</html>

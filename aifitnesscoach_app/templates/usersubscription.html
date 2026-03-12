@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Subscription Plans</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent:#ff2b2b;
+      --bg:#0c0c0c;
+      --muted:rgba(255,255,255,.7);
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Poppins,sans-serif;
+    }
+
+    body{
+      background:linear-gradient(180deg,#030305,#070708);
+      color:#fff;
+      padding:30px;
+    }
+
+    #manage-users{
+      max-width:1100px;
+      margin:auto;
+      background:rgba(12,12,12,.95);
+      border-radius:14px;
+      padding:20px;
+      border:1px solid rgba(255,0,0,.25);
+      box-shadow:0 0 18px rgba(255,0,0,.12);
+    }
+
+    h3{
+      color:var(--accent);
+      font-size:1.6rem;
+      margin-bottom:15px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th,td{
+      padding:12px;
+      text-align:left;
+    }
+
+    thead th{
+      background:rgba(255,0,0,.08);
+      color:#ffb3b3;
+    }
+
+    tbody td{
+      background:rgba(12,12,12,.55);
+      border-bottom:1px solid rgba(255,0,0,.08);
+    }
+
+    tbody tr:hover td{
+      background:rgba(255,0,0,.05);
+    }
+
+    .thumb{
+      width:60px;
+      height:60px;
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .btn-buy{
+      background:linear-gradient(180deg,#ff3030,#e60000);
+      color:#fff;
+      padding:8px 16px;
+      border-radius:999px;
+      text-decoration:none;
+      font-weight:700;
+      font-size:.85rem;
+      border:1px solid rgba(255,0,0,.35);
+      box-shadow:0 0 10px rgba(255,0,0,.25);
+      transition:.2s ease;
+      display:inline-block;
+    }
+
+    .btn-buy:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 18px rgba(255,0,0,.45);
+    }
+
+    .purchased{
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(34,197,94,0.15);
+      color:#22c55e;
+      font-weight:700;
+      font-size:.85rem;
+      border:1px solid rgba(34,197,94,0.4);
+      display:inline-block;
+    }
+
+    .blocked{
+      color:#f87171;
+      font-weight:600;
+      font-size:.85rem;
+    }
+
+    .no-image{
+      color:var(--muted);
+      font-size:.85rem;
+    }
+
+    @media(max-width:768px){
+      thead{display:none}
+      table,tbody,tr,td{display:block;width:100%}
+      tr{margin-bottom:15px}
+      td::before{
+        content:attr(data-label);
+        font-weight:600;
+        color:var(--muted);
+        display:block;
+      }
+    }
+
+    .back-btn {
+    position: fixed;  /* stays in top-left corner */
+    top: 20px;
+    left: 20px;
+    color: white;     /* white arrow and text */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* space between arrow and text */
+}
+.back-btn:hover {
+    color: #ff6b6b; /* optional hover color */
+}
+  </style>
+</head>
+
+<body>
+
+  <a href="/home/" class="back-btn">← Back</a>
+<section id="manage-users">
+  <h3>Subscription Plans</h3>
+
+  <!-- 🟢 ACTIVE FREE TRIAL BANNER -->
+  {% if active_trial %}
+    <div style="
+      margin-bottom:18px;
+      padding:14px 18px;
+      border-radius:12px;
+      background:rgba(255,0,0,.08);
+      border:1px solid rgba(255,0,0,.25);
+      box-shadow:0 0 14px rgba(255,0,0,.15);
+    ">
+      <strong style="color:#ff6b6b;">🎁 Free Trial Active</strong>
+
+      <p style="margin-top:6px;">
+        Trial ends on
+        <strong>{{ active_trial.end_date|date:"d M Y, h:i A" }}</strong>
+      </p>
+
+      <p style="margin-top:4px;color:#ffb3b3;">
+        ⏳ Time remaining:
+        {{ active_trial.end_date|timeuntil }}
+      </p>
+    </div>
+  {% endif %}
+
+  <!-- 🔴 TRIAL ENDED → PAY NOW -->
+  {% if expired_trial_order %}
+    <div style="
+      margin-bottom:18px;
+      padding:16px;
+      border-radius:12px;
+      background:rgba(255,0,0,.18);
+      border:1px solid rgba(255,0,0,.4);
+      box-shadow:0 0 16px rgba(255,0,0,.25);
+    ">
+      <strong style="color:#ff6b6b;">⏰ Free Trial Ended</strong>
+
+      <p style="margin-top:6px;">
+        Continue using
+        <strong>{{ expired_trial_order.plan.package_name }}</strong>
+      </p>
+
+      <form method="post"
+            action="{% url 'subscription_payment_view' expired_trial_order.id %}">
+        {% csrf_token %}
+        <button class="btn-buy" style="margin-top:10px;">
+          Pay Now ₹{{ expired_trial_order.plan.fees }}
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+  <table>
+    <thead>
+      <tr>
+        <th>Duration (in Days)</th>
+        <th>Fees</th>
+        <th>Description</th>
+        <th>Package</th>
+        <th>Type</th>
+        <th>Image</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for plan in work %}
+      <tr>
+        <td data-label="Duration">{{ plan.duration }}</td>
+        <td data-label="Fees">₹{{ plan.fees }}</td>
+        <td data-label="Description">{{ plan.description }}</td>
+        <td data-label="Package">{{ plan.package_name }}</td>
+        <td data-label="Type">{{ plan.type }}</td>
+
+        <td data-label="Image">
+          {% if plan.image %}
+            <div class="thumb">
+              <img src="{{ plan.image.url }}" alt="plan image">
+            </div>
+          {% else %}
+            <span class="no-image">No image</span>
+          {% endif %}
+        </td>
+
+        <td data-label="Action">
+          {% if user and user.subscription_plan %}
+            {% if user.subscription_plan.id == plan.id %}
+              <span class="purchased">✔ Active</span>
+            {% else %}
+              <span class="blocked">Active plan running</span>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'subscription_buynow' plan.id %}" class="btn-buy">
+              Buy Now
+            </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" style="text-align:center;color:var(--muted)">
+          No subscription plans available
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</section>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent: #ff2b2b;
+      --muted: rgba(255,255,255,0.75);
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+    body{
+      background: linear-gradient(180deg,#030305 0%, #070708 60%);
+      color:#fff;
+      padding:30px;
+    }
+
+    #report-box{
+      max-width: 900px;
+      margin:auto;
+      padding:25px;
+      border:1px solid rgba(255,0,0,0.25);
+      border-radius:12px;
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(6px);
+      box-shadow:0 0 15px rgba(255,0,0,0.12);
+    }
+
+    h2{
+      color:var(--accent);
+      text-shadow:0 0 12px rgba(255,0,0,0.2);
+      margin-bottom:18px;
+      text-align:center;
+    }
+
+    .section{
+      margin-bottom:25px;
+      padding-bottom:15px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+    }
+
+    .section h3{
+      color:#ff7777;
+      margin-bottom:10px;
+      font-size:1.2rem;
+    }
+
+    .data-row{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:8px;
+      color:var(--muted);
+    }
+
+    .data-row span{ color:#fff; }
+
+    .diet-box{
+      background:rgba(255,255,255,0.03);
+      padding:12px;
+      border-radius:8px;
+      margin-bottom:10px;
+    }
+
+    .btn-back{
+      display:inline-block;
+      padding:10px 18px;
+      background:linear-gradient(180deg,#444,#222);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px;
+      text-decoration:none;
+      color:#fff;
+      font-weight:600;
+      transition:0.2s;
+    }
+
+    .btn-back:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 12px rgba(255,255,255,0.15);
+    }
+
+    @media (max-width:700px){
+      .data-row{ flex-direction:column; gap:4px; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="report-box">
+    <h2>Your Daily Health Report</h2>
+
+    <div class="section">
+  <h3>Basic Information</h3>
+  <div class="data-row"><strong>Age:</strong> <span>{{ record.age }}</span></div>
+  <div class="data-row"><strong>Weight:</strong> <span>{{ record.current_weight }}</span></div>
+  <div class="data-row"><strong>Height:</strong> <span>{{ record.current_height }}</span></div>
+
+  <div class="data-row">
+    <strong>Fitness Goal:</strong>
+    <span>{{ record.fitness_goal }}</span>
+  </div>
+
+  <div class="data-row"><strong>Body Fat:</strong> <span>{{ record.current_fat }}</span></div>
+  <div class="data-row"><strong>Cholesterol:</strong> <span>{{ record.current_cholestrole }}</span></div>
+  <div class="data-row"><strong>Blood Sugar:</strong> <span>{{ record.current_suger }}</span></div>
+  <div class="data-row"><strong>Injuries / Issues:</strong> <span>{{ record.injuries }}</span></div>
+</div>
+
+
+    <div class="section">
+      <h3>AI Suggestions</h3>
+      <p style="color:var(--muted); font-size:0.95rem;">{{ ai.ai_suggestions }}</p>
+    </div>
+
+    <div class="section">
+      <h3>Risk Analysis</h3>
+      <p style="color:var(--muted); font-size:0.95rem;">{{ ai.risks }}</p>
+    </div>
+
+    <div class="section">
+      <h3>Workout Plan</h3>
+     <div class="workout-box">
+  {% for line in ai.workout_plan.splitlines %}
+    {% if line %}
+      <p>• {{ line }}</p>
+    {% endif %}
+  {% endfor %}
+</div>
+
+    </div>
+
+    <div class="section">
+      <h3>Lifestyle Recommendation</h3>
+      <p style="color:var(--muted); font-size:0.95rem;">{{ ai.lifestyle }}</p>
+    </div>
+
+    <div class="section">
+  <h3>Diet Plan (7 Days)</h3>
+
+  {% for day in ai.diet_plan %}
+    <h4 style="color:#ff7777; margin-top:15px;">{{ day.day }}</h4>
+
+    {% for meal in day.meals %}
+      <div class="diet-box">
+        <strong>{{ meal.time }}:</strong>
+        <p style="margin-top:4px; color:var(--muted);">
+          {{ meal.meal }}
+        </p>
+      </div>
+    {% endfor %}
+
+  {% endfor %}
+</div>
+
+</div>   <!-- end of Diet Plan section -->
+
+
+
+    <div class="section">
+      <h3>Summary</h3>
+      <p style="color:var(--muted); font-size:0.95rem;">{{ ai.summary }}</p>
+    </div>
+
+    <div style="text-align:center; margin-top:25px;">
+      <a href="{% url 'Health_condition' %}" class="btn-back">Back to Form</a>
+    </div>
+
+  </div>
+
+</body>
+</html>

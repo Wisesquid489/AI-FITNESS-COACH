@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback List</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --accent: #ff2b2b;
+            --accent-light: #ff6b6b;
+            --panel: rgba(12, 12, 12, 0.92);
+            --muted: rgba(255,255,255,0.75);
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background:
+              linear-gradient(rgba(0,0,0,0.75), rgba(10,0,0,0.75)),
+              url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1920&q=80')
+              center/cover fixed no-repeat;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            justify-content: center;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-title {
+            font-size: 2.2rem;
+            color: var(--accent);
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255,0,0,0.35);
+            margin: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--panel);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,0,0,0.2);
+            box-shadow: 0 0 18px rgba(255,0,0,0.15);
+        }
+
+        th {
+            background: rgba(255,0,0,0.15);
+            color: var(--accent-light);
+            padding: 14px;
+            font-size: 0.95rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,0,0,0.25);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: #fff;
+            font-size: 0.92rem;
+            vertical-align: top;
+        }
+
+        .comment-box {
+            max-width: 300px;
+            white-space: pre-line;
+            word-wrap: break-word;
+        }
+
+        tbody tr:hover td {
+            background: rgba(255,0,0,0.05);
+            border-left: 3px solid rgba(255,0,0,0.4);
+            transition: 0.2s ease;
+        }
+
+        /* Action Buttons */
+        .delete-btn {
+            background: linear-gradient(180deg, #ff3030, #d60000);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,0,0,0.3);
+            box-shadow: 0 0 8px rgba(255,0,0,0.25);
+            transition: 0.2s ease;
+            margin: 2px 0;
+            display: inline-block;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(180deg, #ff5050, #ff1a1a);
+            box-shadow: 0 0 12px rgba(255,0,0,0.35);
+        }
+
+        /* Empty state */
+        td[colspan] {
+            background: rgba(255,255,255,0.02);
+            color: var(--muted);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 720px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 15px;
+                background: rgba(255,255,255,0.03);
+                padding: 12px;
+                border-radius: 10px;
+            }
+
+            td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border-bottom: none;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--muted);
+                margin-right: 10px;
+            }
+        }
+
+        .back-btn {
+    position: fixed;  /* stays in top-left corner */
+    top: 20px;
+    left: 20px;
+    color: white;     /* white arrow and text */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* space between arrow and text */
+}
+.back-btn:hover {
+    color: #ff6b6b; /* optional hover color */
+}
+    </style>
+</head>
+<body>
+<div class="content-wrapper">
+
+    <a href="/home/" class="back-btn">← Back</a>
+
+    <div class="page-header">
+        <h2 class="main-title">📋 All Feedbacks</h2>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Website Rating</th>
+                <th>Workout Rating</th>
+                <th>Comment</th>
+                <th>User Email</th>
+                <th>Submitted On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for feedback in feedbacks %}
+            <tr>
+                <td data-label="Website Rating">{{ feedback.website_rating }}</td>
+                <td data-label="Workout Rating">{{ feedback.workout_rating }}</td>
+                <td data-label="Comment" class="comment-box">{{ feedback.comment|default:"No comment provided." }}</td>
+                <td data-label="User Email">{{ feedback.email|default:"N/A" }}</td>
+                <td data-label="Submitted On">{{ feedback.created_at }}</td>
+                <td data-label="Action">
+                    <a class="delete-btn" 
+                       href="/user_feedback_edit/{{ feedback.id }}/" 
+                       onclick="return confirm('Are you sure you want to edit this feedback?');">
+                       Edit
+                    </a>
+
+                    <a class="delete-btn" 
+                       href="/user_feedback_delete/{{ feedback.id }}/" 
+                       onclick="return confirm('Are you sure you want to delete this feedback?');">
+                       Delete
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:20px;">
+                    No feedback submitted yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

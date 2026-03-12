@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Workout Analysis Result</title>
+
+<style>
+body{
+    margin:0;
+    background:radial-gradient(circle at top right,#0b0f16,#020409 70%);
+    font-family:Poppins,sans-serif;
+    color:#e8ecf7;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.card{
+    width:900px;
+    max-width:95%;
+    background:rgba(10,16,30,.9);
+    border-radius:24px;
+    padding:30px;
+    border:1px solid rgba(0,229,255,.3);
+    box-shadow:0 0 40px rgba(0,229,255,.2);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.header h2{
+    margin:0;
+    font-size:26px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    gap:25px;
+}
+
+img{
+    width:100%;
+    border-radius:16px;
+    border:2px solid rgba(0,229,255,.4);
+}
+
+.placeholder{
+    min-height:220px;
+    border-radius:16px;
+    border:2px dashed rgba(0,229,255,.4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:.7;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 18px;
+    border-radius:20px;
+    font-size:14px;
+}
+
+.CORRECT{
+    background:rgba(0,200,83,.15);
+    color:#00e676;
+    border:1px solid rgba(0,200,83,.6);
+}
+
+.INCORRECT{
+    background:rgba(244,67,54,.15);
+    color:#ff5252;
+    border:1px solid rgba(244,67,54,.6);
+}
+
+.info p{
+    margin:8px 0;
+}
+
+.feedback{
+    background:rgba(255,255,255,.05);
+    padding:18px;
+    border-radius:16px;
+    margin-top:14px;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:22px;
+    padding:10px 26px;
+    border-radius:30px;
+    text-decoration:none;
+    color:white;
+    background:linear-gradient(90deg,#6c4bff,#00e5ff);
+    box-shadow:0 0 14px rgba(0,229,255,.4);
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="header">
+        <h2>Workout Posture Result</h2>
+    </div>
+
+    <div class="grid">
+
+        <div>
+            {% if analysis.image %}
+                <img src="{{ analysis.image.url }}" alt="Workout Frame">
+            {% else %}
+                <div class="placeholder">No image captured</div>
+            {% endif %}
+        </div>
+
+        <div class="info">
+
+            <!-- ✅ SMALL ADDITION -->
+            <p>
+                User:
+                <strong>
+                    {% if analysis.user %}
+                        {{ analysis.user.name }}
+                    {% else %}
+                        Guest
+                    {% endif %}
+                </strong>
+            </p>
+
+            <h3>{{ analysis.workout_name }}</h3>
+
+            <p>
+                Status:
+                <span class="badge {{ analysis.posture_status }}">
+                    {{ analysis.posture_status }}
+                </span>
+            </p>
+
+            <p>
+                Confidence Score:
+                <strong>{{ analysis.confidence_score }}%</strong>
+            </p>
+
+            {% if analysis.rep_count > 0 %}
+            <p>
+                Repetitions:
+                <strong>{{ analysis.rep_count }}</strong>
+            </p>
+            {% endif %}
+
+            {% if analysis.duration_seconds %}
+            <p>
+                Duration:
+                <strong>{{ analysis.duration_seconds }}s</strong>
+            </p>
+            {% endif %}
+
+            <div class="feedback">
+                <strong>AI Suggestions</strong>
+                <p>{{ analysis.ai_feedback }}</p>
+            </div>
+
+            <a href="{% url 'workout_camera' %}" class="btn">Scan Again</a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

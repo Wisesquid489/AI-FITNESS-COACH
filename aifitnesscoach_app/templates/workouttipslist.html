@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Workouttips List</title>
+
+  <!-- Performance: preconnect to Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent: #ff2b2b;
+      --accent-light: #ff6b6b;
+      --muted: rgba(255,255,255,0.75);
+      --bg: #0c0c0c;
+    }
+
+    *{ box-sizing: border-box; margin:0; padding:0; font-family:'Poppins',sans-serif; }
+    html,body { height:100%; }
+    body{
+      background: linear-gradient(180deg,#030305 0%, #070708 60%);
+      color:#fff;
+      padding:30px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .visually-hidden{
+      position:absolute!important;
+      height:1px;width:1px;overflow:hidden;
+      clip:rect(1px,1px,1px,1px);
+      white-space:nowrap;border:0;padding:0;margin:-1px;
+    }
+
+    #manage-users {
+      border: 1px solid rgba(255,0,0,0.25);
+      box-shadow: 0 0 15px rgba(255,0,0,0.12);
+      border-radius: 12px;
+      padding: 20px;
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(6px);
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .title-row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    #manage-users h3{
+      font-size:1.6rem;
+      font-weight:700;
+      color:var(--accent);
+      text-shadow:0 0 12px rgba(255,0,0,0.15);
+      margin:0;
+    }
+
+    .controls {
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    input#search {
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: #fff;
+      font-size:0.95rem;
+      min-width:180px;
+    }
+    input#search::placeholder { color: rgba(255,255,255,0.45); }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      border:1px solid rgba(255,0,0,0.2);
+      table-layout:auto;
+    }
+
+    caption { text-align:left; margin-bottom:10px; font-weight:600; color:var(--muted); }
+
+    thead th{
+      background: rgba(255,0,0,0.08);
+      padding:12px;
+      color:#ffb3b3;
+      border-bottom:1px solid rgba(255,0,0,0.12);
+      text-align:left;
+      font-size:0.95rem;
+      font-weight:600;
+    }
+
+    tbody td{
+      padding:12px;
+      background:rgba(12,12,12,0.55);
+      border-bottom:1px solid rgba(255,0,0,0.06);
+      font-size:0.95rem;
+      vertical-align:middle;
+    }
+
+    tbody tr:hover td{
+      background:rgba(255,0,0,0.04);
+      border-left:3px solid rgba(255,0,0,0.18);
+      transition:0.18s ease;
+    }
+
+    .thumb {
+      display:inline-block;
+      width:64px;
+      height:64px;
+      border-radius:8px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.04);
+      background:rgba(255,255,255,0.02);
+    }
+    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .no-image {
+      display:inline-block;
+      padding:6px 8px;
+      border-radius:6px;
+      background:rgba(255,255,255,0.02);
+      color:var(--muted);
+      font-size:0.85rem;
+    }
+
+    .btn-delete, .btn-edit{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:0.85rem;
+      font-weight:700;
+      text-decoration:none;
+      transition:0.18s ease;
+      color:#fff;
+      cursor:pointer;
+      border:0;
+    }
+
+    .btn-delete{
+      background:linear-gradient(180deg,#ff3030,#e60000);
+      border:1px solid rgba(255,0,0,0.25);
+      box-shadow:0 0 8px rgba(255,0,0,0.12);
+    }
+    .btn-delete:hover{ transform:translateY(-2px); box-shadow:0 0 14px rgba(255,0,0,0.28); }
+
+    .btn-edit{
+      background:linear-gradient(180deg,#444,#222);
+      border:1px solid rgba(255,255,255,0.06);
+    }
+    .btn-edit:hover{ transform:translateY(-2px); box-shadow:0 0 10px rgba(255,255,255,0.08); }
+
+    a.btn-edit { display:inline-block; padding:8px 12px; color:#fff; text-decoration:none; border-radius:8px; }
+
+    :focus { outline: none; }
+    a:focus, button:focus, input:focus {
+      outline: 3px solid rgba(255,107,107,0.28);
+      outline-offset: 3px;
+      border-radius:6px;
+    }
+
+    .empty-state { padding:18px; text-align:center; color:var(--muted); background:transparent; border-radius:8px; }
+
+    @media (max-width: 720px) {
+      thead { display:none; }
+      table, tbody, tr, td { display:block; width:100%; }
+      tbody tr {
+        margin-bottom:12px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border-radius:10px;
+        padding:12px;
+      }
+      tbody td {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:8px 6px;
+        border-bottom:none;
+      }
+      tbody td::before{
+        content:attr(data-label);
+        flex:0 0 36%;
+        color:var(--muted);
+        font-weight:600;
+        margin-right:8px;
+      }
+      .thumb { width:56px; height:56px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+    /* ---------- IMAGE POPUP MODAL ---------- */
+.image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.image-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(3px);
+}
+
+.image-modal-content {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  max-height: 90%;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0c0c0c;
+  padding: 14px;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(255,0,0,0.35);
+}
+
+.image-modal-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-modal-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.image-modal-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ff2b2b;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+ .back-btn {
+    position: fixed;  /* stays in top-left corner */
+    top: 20px;
+    left: 20px;
+    color: white;     /* white arrow and text */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* space between arrow and text */
+}
+.back-btn:hover {
+    color: #ff6b6b; /* optional hover color */
+}
+
+  </style>
+</head>
+
+<body>
+
+  <a href="/adminhome/" class="back-btn">← Back</a>
+
+
+  <section id="manage-users" aria-labelledby="workouts-heading">
+    <div class="title-row">
+      <h3 id="workouts-heading">Workout Tips</h3>
+
+      <!-- ONLY SEARCH BOX HERE -->
+      <div class="controls">
+        <label for="search" class="visually-hidden">Search workouts</label>
+        <input id="search" type="search" placeholder="Search workouts..." aria-label="Search workouts">
+      </div>
+    </div>
+
+    <table aria-describedby="table-desc">
+      <caption id="table-desc" class="visually-hidden">Workout tips table</caption>
+
+      <thead>
+        <tr>
+          <th scope="col">Workout</th>
+          <th scope="col">Image</th>
+          <th scope="col">Description</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Action</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for work in work %}
+        <tr>
+          <td data-label="Workout">{{ work.workout }}</td>
+
+          <td data-label="Image">
+            {% if work.image %}
+              <span class="thumb">
+               <img src="{{ work.image.url }}"
+     alt="{{ work.workout }} image"
+     loading="lazy"
+     class="popup-image"
+     style="cursor:pointer;">
+
+              </span>
+            {% else %}
+              <span class="no-image">No image</span>
+            {% endif %}
+          </td>
+
+          <td data-label="Description">{{ work.description }}</td>
+          <td data-label="Duration">{{ work.duration }}</td>
+
+          <td data-label="Delete">
+            <a class="btn-delete" href="/deletework/{{ work.id }}"
+               onclick="return confirm('Delete {{ work.workout }}?');">
+              Delete
+            </a>
+          </td>
+
+          <td data-label="Edit">
+            <a class="btn-edit" href="/editworkouttips/{{ work.id }}">Edit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if work|length == 0 %}
+    <div class="empty-state">
+      <p>No workouts found.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <script>
+    (function(){
+      const search = document.getElementById('search');
+      if (!search) return;
+
+      search.addEventListener('input', function (e) {
+        const q = e.target.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#manage-users tbody tr');
+        rows.forEach(row => {
+          const text = row.innerText.toLowerCase();
+          row.style.display = q === '' ? '' : (text.includes(q) ? '' : 'none');
+        });
+      });
+    })();
+  </script>
+  <!-- Image Popup Modal -->
+<div id="imageModal" class="image-modal visually-hidden">
+  <div class="image-modal-backdrop"></div>
+  <div class="image-modal-content">
+    <button class="image-modal-close">&times;</button>
+    <img id="modalImage" src="" alt="Workout Image Preview">
+  </div>
+</div>
+<script>
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImage");
+  const closeBtn = document.querySelector(".image-modal-close");
+  const backdrop = document.querySelector(".image-modal-backdrop");
+
+  document.querySelectorAll(".popup-image").forEach(img => {
+    img.addEventListener("click", () => {
+      modalImg.src = img.src;
+      modal.classList.remove("visually-hidden");
+    });
+  });
+
+  function closeModal() {
+    modal.classList.add("visually-hidden");
+    modalImg.src = "";
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", closeModal);
+</script>
+
+</body>
+</html>

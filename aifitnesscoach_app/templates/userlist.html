@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root{
+      --bg-dark: #060507;
+      --panel: rgba(12,12,12,0.92);
+      --accent: #ff2b2b;
+      --accent-2: #ff6b6b;
+      --muted: rgba(255,255,255,0.75);
+      --glass-blur: 10px;
+      --sidebar-w: 260px;
+      --radius: 12px;
+    }
+
+    *{ box-sizing: border-box; margin:0; padding:0; }
+    html,body{
+      height:100%;
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(180deg,#030305 0%, #070708 60%);
+      color:#fff;
+    }
+
+    /* Manage Users box */
+    #manage-users {
+        border: 1px solid rgba(255,0,0,0.25);
+        box-shadow: 0 0 15px rgba(255,0,0,0.15);
+        border-radius: 12px;
+        padding: 20px;
+        width: 95%;
+        margin: 30px auto;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(6px);
+    }
+
+    /* Heading */
+    #manage-users h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ff4d4d;
+        text-shadow: 0 0 12px rgba(255, 0, 0, 0.25);
+        margin-bottom: 18px;
+        letter-spacing: 1px;
+        border-left: 5px solid #ff4d4d;
+        padding-left: 10px;
+    }
+
+    /* Table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid rgba(255,0,0,0.4);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    thead th {
+        background: rgba(255,0,0,0.12);
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,0,0,0.4);
+        text-align: left;
+        color: #ffb3b3;
+    }
+
+    tbody td {
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,0,0,0.25);
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background: rgba(255,0,0,0.08);
+        transition: 0.2s;
+    }
+
+    /* NEW CLEAN DELETE BUTTON */
+    .btn-delete {
+        padding: 8px 12px;
+        background: #e60000;
+        color: white;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.15s;
+    }
+    .btn-delete:hover {
+        background: #ff1a1a;
+        transform: translateY(-2px);
+    }
+
+    /* Fixed Back Button */
+    .back-btn {
+        position: fixed;      /* stays in top-left corner */
+        top: 20px;            /* distance from top */
+        left: 20px;           /* distance from left */
+        z-index: 1000;        /* above other content */
+        color: white;         /* white arrow and text */
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;             /* space between arrow and text */
+    }
+    .back-btn:hover {
+        color: #ff6b6b;       /* hover color */
+    }
+
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Back Button -->
+    <a href="/adminhome/" class="back-btn">← Back</a>
+
+    <section id="manage-users">
+        <h3>Manage Users</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Age</th>
+              <th>Height</th>
+              <th>Weight</th>
+              <th>Gender</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{user.name}}</td>
+              <td>{{user.email}}</td>
+              <td>{{user.age}}</td>
+              <td>{{user.height}}</td>
+              <td>{{user.weight}}</td>
+              <td>{{user.gender}}</td>
+
+              <td>
+                <a class="btn-delete" onclick="return confirm('Are you Sure?');" href="/deleteuser/{{ user.id }}">
+                    Delete
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+    </section>
+
+</body>
+</html>

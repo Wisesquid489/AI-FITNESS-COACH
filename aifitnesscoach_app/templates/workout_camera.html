@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Workout Tracker</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #00e5ff;
+    --primary-dark: #00b8d4;
+    --secondary: #6c4bff;
+    --success: #00e676;
+    --warning: #ffd166;
+    --danger: #ff5252;
+    --bg-dark: #0a0e1a;
+    --bg-card: rgba(15, 20, 35, 0.95);
+    --border: rgba(0, 229, 255, 0.3);
+    --text: #e8ecf7;
+    --text-dim: rgba(232, 236, 247, 0.7);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: clamp(16px, 4vw, 32px);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: clamp(16px, 3vw, 24px);
+}
+
+.tag {
+    font-size: clamp(9px, 2vw, 11px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--primary);
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 12px;
+    background: rgba(0, 229, 255, 0.1);
+}
+
+.title {
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: var(--text-dim);
+    margin-bottom: 20px;
+}
+
+/* Workout Selector */
+.workout-selector {
+    margin: 20px 0;
+}
+
+.workout-selector label {
+    display: block;
+    font-size: clamp(12px, 2.5vw, 14px);
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.workout-selector select {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: rgba(20, 25, 40, 0.9);
+    color: var(--text);
+    font-size: clamp(13px, 2.5vw, 15px);
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.workout-selector select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+.workout-selector select:hover {
+    border-color: var(--primary-dark);
+}
+
+/* Workout Info */
+.workout-info {
+    font-size: clamp(11px, 2.5vw, 13px);
+    margin: 16px 0;
+    padding: 16px;
+    background: rgba(0, 229, 255, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.workout-info strong {
+    font-size: clamp(13px, 2.5vw, 15px);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.workout-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: clamp(9px, 2vw, 11px);
+    font-weight: 600;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.badge-reps {
+    background: rgba(108, 75, 255, 0.3);
+    border: 1px solid rgba(108, 75, 255, 0.6);
+    color: #a78bfa;
+}
+
+.badge-time {
+    background: rgba(255, 165, 0, 0.3);
+    border: 1px solid rgba(255, 165, 0, 0.6);
+    color: #fbbf24;
+}
+
+/* Custom Inputs */
+.custom-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: clamp(10px, 2vw, 12px);
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--primary);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: rgba(20, 25, 40, 0.9);
+    color: var(--text);
+    font-size: clamp(12px, 2.5vw, 14px);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+/* Video Container */
+.video-container {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-height: 70vh;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    display: none;
+    object-fit: cover;
+}
+
+video.active {
+    display: block;
+}
+
+#overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: none;
+}
+
+#overlay-canvas.active {
+    display: block;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: clamp(13px, 2.5vw, 15px);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+    min-width: 140px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#start-btn {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4);
+}
+
+#start-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(0, 229, 255, 0.6);
+}
+
+#start-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#stop-btn {
+    background: linear-gradient(135deg, #ff5252, #ff1744);
+    box-shadow: 0 4px 20px rgba(255, 82, 82, 0.4);
+    display: none;
+}
+
+#stop-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 82, 82, 0.6);
+}
+
+/* Status Display */
+.status-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#status {
+    font-size: clamp(13px, 3vw, 16px);
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+#posture {
+    font-size: clamp(12px, 2.5vw, 14px);
+    font-weight: 500;
+    line-height: 1.6;
+    min-height: 40px;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .container {
+        padding: 40px;
+    }
+    
+    .custom-inputs {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    video {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 900px;
+    }
+    
+    video {
+        max-height: 500px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1100px;
+    }
+    
+    video {
+        max-height: 600px;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    .container {
+        border-radius: 12px;
+        padding: 16px;
+    }
+    
+    .custom-inputs {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .btn {
+        min-width: 120px;
+        padding: 12px 24px;
+    }
+    
+    video {
+        aspect-ratio: 3 / 4;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        padding: 10px;
+    }
+    
+    .container {
+        margin: 10px 0;
+    }
+    
+    video {
+        max-height: 300px;
+    }
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.recording {
+    animation: pulse 2s infinite;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- MediaPipe Pose Detection Library -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js" crossorigin="anonymous"></script>
+
+<div class="container">
+
+<div class="header">
+    <div class="tag">AI Fitness Tracker</div>
+    <h1 class="title">Workout Posture Analysis</h1>
+    <p class="subtitle">Select your workout and let AI analyze your form in real-time</p>
+</div>
+
+<div class="workout-selector">
+    <label for="workout-select">Choose Your Workout:</label>
+    <select id="workout-select">
+        <option value="">-- Select a workout --</option>
+        {% for name, config in workouts.items %}
+        <option value="{{ name }}" data-type="{{ config.type }}" data-sets="{{ config.sets }}" 
+                data-reps="{{ config.reps|default:'' }}" data-duration="{{ config.duration|default:'' }}" 
+                data-rest="{{ config.rest }}">
+            {{ name }}
+            {% if config.type == 'reps' %}
+            ({{ config.sets }} sets × {{ config.reps }} reps)
+            {% else %}
+            ({{ config.sets }} sets × {{ config.duration }}s)
+            {% endif %}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+
+<div id="workout-info" class="workout-info" style="display:none;">
+    <div id="workout-details"></div>
+    
+    <div class="custom-inputs">
+        <div class="input-group">
+            <label for="sets-input">Sets:</label>
+            <input type="number" id="sets-input" min="1" max="10" value="3">
+        </div>
+        
+        <div class="input-group" id="reps-group" style="display:none;">
+            <label for="reps-input">Reps per set:</label>
+            <input type="number" id="reps-input" min="1" max="50" value="12">
+        </div>
+        
+        <div class="input-group" id="duration-group" style="display:none;">
+            <label for="duration-input">Duration (seconds):</label>
+            <input type="number" id="duration-input" min="10" max="120" value="30">
+        </div>
+        
+        <div class="input-group">
+            <label for="rest-input">Rest (seconds):</label>
+            <input type="number" id="rest-input" min="10" max="120" value="30">
+        </div>
+    </div>
+</div>
+
+<div class="button-group">
+    <button id="start-btn" class="btn" disabled>Start Workout</button>
+    <button id="stop-btn" class="btn">Stop & Save</button>
+</div>
+
+<div class="video-container">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="overlay-canvas"></canvas>
+</div>
+<canvas id="canvas" hidden></canvas>
+
+<div class="status-container">
+    <div id="status">Select a workout to begin</div>
+    <div id="posture"></div>
+</div>
+
+</div>
+
+<script>
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const overlayCanvas = document.getElementById("overlay-canvas");
+const startBtn = document.getElementById("start-btn");
+const stopBtn = document.getElementById("stop-btn");
+const statusText = document.getElementById("status");
+const postureDiv = document.getElementById("posture");
+const workoutSelect = document.getElementById("workout-select");
+const workoutInfo = document.getElementById("workout-info");
+const workoutDetails = document.getElementById("workout-details");
+
+const setsInput = document.getElementById("sets-input");
+const repsInput = document.getElementById("reps-input");
+const durationInput = document.getElementById("duration-input");
+const restInput = document.getElementById("rest-input");
+const repsGroup = document.getElementById("reps-group");
+const durationGroup = document.getElementById("duration-group");
+
+let stream = null;
+let captureInterval = null;
+let renderInterval = null;
+let active = false;
+let selectedWorkout = null;
+let workoutType = null;
+let customConfig = {};
+let lastLandmarks = null; // Store landmarks from backend
+let isProcessing = false; // Prevent overlapping requests
+
+// Skeleton connections for drawing
+const POSE_CONNECTIONS = [
+    // Torso
+    [11, 12], [11, 23], [12, 24], [23, 24],
+    // Right arm
+    [12, 14], [14, 16],
+    // Left arm  
+    [11, 13], [13, 15],
+    // Right leg
+    [24, 26], [26, 28], [28, 32], [28, 30],
+    // Left leg
+    [23, 25], [25, 27], [27, 31], [27, 29]
+];
+
+// Smooth rendering loop using requestAnimationFrame
+function renderSkeletonLoop() {
+    if (!active) return;
+    
+    if (lastLandmarks) {
+        drawSkeletonOverlay(lastLandmarks);
+    }
+    
+    requestAnimationFrame(renderSkeletonLoop);
+}
+
+// Draw skeleton overlay from backend landmarks
+function drawSkeletonOverlay(landmarks) {
+    if (!landmarks || !overlayCanvas || !video.videoWidth) return;
+    
+    const ctx = overlayCanvas.getContext('2d');
+    
+    // Only resize canvas if dimensions changed
+    if (overlayCanvas.width !== video.videoWidth || overlayCanvas.height !== video.videoHeight) {
+        overlayCanvas.width = video.videoWidth;
+        overlayCanvas.height = video.videoHeight;
+    }
+    
+    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    
+    // Draw connections (skeleton lines)
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    
+    POSE_CONNECTIONS.forEach(([start, end]) => {
+        const startPoint = landmarks[start];
+        const endPoint = landmarks[end];
+        
+        if (startPoint && endPoint) {
+            ctx.beginPath();
+            ctx.moveTo(startPoint[0], startPoint[1]);
+            ctx.lineTo(endPoint[0], endPoint[1]);
+            ctx.stroke();
+        }
+    });
+    
+    // Draw joint points
+    Object.values(landmarks).forEach(point => {
+        if (point) {
+            const [x, y] = point;
+            
+            // Outer glow
+            ctx.beginPath();
+            ctx.arc(x, y, 7, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(0, 229, 255, 0.3)';
+            ctx.fill();
+            
+            // Inner circle
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#00ff88';
+            ctx.fill();
+            
+            // Border
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+    });
+}
+
+// Handle workout selection
+workoutSelect.onchange = () => {
+    const option = workoutSelect.options[workoutSelect.selectedIndex];
+    selectedWorkout = option.value;
+    
+    if (selectedWorkout) {
+        workoutType = option.dataset.type;
+        const sets = parseInt(option.dataset.sets);
+        const reps = parseInt(option.dataset.reps);
+        const duration = parseInt(option.dataset.duration);
+        const rest = parseInt(option.dataset.rest);
+        
+        // Set default values
+        setsInput.value = sets;
+        restInput.value = rest;
+        
+        // Show/hide appropriate inputs
+        if (workoutType === 'reps') {
+            repsInput.value = reps;
+            repsGroup.style.display = "block";
+            durationGroup.style.display = "none";
+        } else {
+            durationInput.value = duration;
+            repsGroup.style.display = "none";
+            durationGroup.style.display = "block";
+        }
+        
+        updateWorkoutDetails();
+        workoutInfo.style.display = "block";
+        startBtn.disabled = false;
+        statusText.innerText = "Ready to start!";
+    } else {
+        workoutInfo.style.display = "none";
+        startBtn.disabled = true;
+        statusText.innerText = "Select a workout to begin";
+    }
+};
+
+// Update details when inputs change
+setsInput.oninput = updateWorkoutDetails;
+repsInput.oninput = updateWorkoutDetails;
+durationInput.oninput = updateWorkoutDetails;
+restInput.oninput = updateWorkoutDetails;
+
+function updateWorkoutDetails() {
+    let detailsHTML = `<strong>${selectedWorkout}</strong>`;
+    
+    if (workoutType === 'reps') {
+        detailsHTML += `<span class="workout-badge badge-reps">REP-BASED</span><br>`;
+        detailsHTML += `${setsInput.value} sets × ${repsInput.value} reps | ${restInput.value}s rest`;
+    } else {
+        detailsHTML += `<span class="workout-badge badge-time">TIME-BASED</span><br>`;
+        detailsHTML += `${setsInput.value} sets × ${durationInput.value}s hold | ${restInput.value}s rest`;
+    }
+    
+    workoutDetails.innerHTML = detailsHTML;
+}
+
+startBtn.onclick = async () => {
+    if(active || !selectedWorkout) return;
+
+    // Prepare custom config
+    customConfig = {
+        sets: parseInt(setsInput.value),
+        rest: parseInt(restInput.value)
+    };
+    
+    if (workoutType === 'reps') {
+        customConfig.reps = parseInt(repsInput.value);
+    } else {
+        customConfig.duration = parseInt(durationInput.value);
+    }
+
+    try{
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        video.srcObject = stream;
+        video.classList.add('active');
+        overlayCanvas.classList.add('active');
+        active = true;
+
+        startBtn.disabled = true;
+        workoutSelect.disabled = true;
+        setsInput.disabled = true;
+        repsInput.disabled = true;
+        durationInput.disabled = true;
+        restInput.disabled = true;
+        stopBtn.style.display = "inline-block";
+        statusText.innerText = "Workout started…";
+        postureDiv.innerText = "";
+
+        // Start smooth skeleton rendering at 60 FPS
+        requestAnimationFrame(renderSkeletonLoop);
+        
+        // Start backend analysis at 2.5 FPS (every 400ms) - optimized for smoothness
+        captureInterval = setInterval(captureFrame, 400);
+    }catch(error){
+        console.error('Camera error:', error);
+        statusText.innerText = "Camera access denied";
+    }
+};
+
+stopBtn.onclick = () => {
+    // Send stop signal to backend and redirect to result
+    fetch("{% url 'workout_camera' %}?action=stop", {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    }).then(res => res.json()).then(data => {
+        stopCamera();
+        if (data.analysis_id) {
+            window.location.href = `/workout_result/${data.analysis_id}/`;
+        } else {
+            statusText.innerText = "Workout stopped.";
+        }
+    });
+};
+
+async function captureFrame(){
+    if(!video.videoWidth || isProcessing) return;
+    
+    isProcessing = true;
+
+    // Downscale image for faster processing (480px width max for even better performance)
+    const maxWidth = 480;
+    const scale = Math.min(1, maxWidth / video.videoWidth);
+    const width = video.videoWidth * scale;
+    const height = video.videoHeight * scale;
+    
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext("2d").drawImage(video, 0, 0, width, height);
+
+    const imageData = canvas.toDataURL("image/jpeg", 0.7); // 70% quality for faster upload
+
+    try {
+        const res = await fetch("{% url 'workout_camera' %}",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/x-www-form-urlencoded",
+                "X-CSRFToken":"{{ csrf_token }}"
+            },
+            body:"image=" + encodeURIComponent(imageData) + 
+                 "&workout=" + encodeURIComponent(selectedWorkout) +
+                 "&config=" + encodeURIComponent(JSON.stringify(customConfig))
+        });
+
+        const data = await res.json();
+        
+        // Update landmarks for smooth rendering
+        if (data.landmarks) {
+            lastLandmarks = data.landmarks;
+        }
+
+        if (!data.stop) {
+
+            /* 🟡 REST MODE WITH COUNTDOWN */
+            if (data.status === "REST") {
+                statusText.innerText =
+                    `Rest: ${data.rest_seconds}s remaining (Set ${data.set})`;
+
+                postureDiv.innerText = "Recover and prepare for next set";
+                postureDiv.style.color = "#ffd166";
+            }
+
+            /* 🟠 SET COMPLETE */
+            else if (data.status === "SET_COMPLETE") {
+                statusText.innerText = data.message;
+                postureDiv.innerText = "Great job! 💪";
+                postureDiv.style.color = "#7CFF7C";
+            }
+
+            /* 🟢 ACTIVE WORKOUT */
+            else {
+                // Display based on workout type
+                if (data.workout_type === "reps") {
+                    statusText.innerText =
+                        `${data.workout_name} | Set ${data.set || 1} | Reps: ${data.reps || 0}`;
+                } else if (data.workout_type === "time") {
+                    statusText.innerText =
+                        `${data.workout_name} | Set ${data.set || 1} | Time: ${data.duration || 0}s / ${data.target_duration || 30}s`;
+                }
+
+                if (data.posture_status === "INCORRECT") {
+                    // Check if it's an exercise mismatch warning
+                    if (data.posture_feedback.includes("⚠️") || data.posture_feedback.includes("Wrong exercise")) {
+                        postureDiv.innerText = data.posture_feedback;
+                        postureDiv.style.color = "#ff9800";  // Orange for warnings
+                        postureDiv.style.fontSize = "14px";
+                        postureDiv.style.fontWeight = "bold";
+                    } else {
+                        postureDiv.innerText = "❌ " + data.posture_feedback;
+                        postureDiv.style.color = "#ff5b5b";
+                    }
+                } else {
+                    postureDiv.innerText = "✅ Good form - Keep going!";
+                    postureDiv.style.color = "#7CFF7C";
+                    postureDiv.style.fontSize = "13px";
+                    postureDiv.style.fontWeight = "600";
+                }
+                
+                // Display advanced metrics if available
+                if (data.movement_quality !== undefined && data.rom_score !== undefined) {
+                    const metricsHTML = `<br><small style="opacity:0.8">Quality: ${Math.round(data.movement_quality)}% | ROM: ${Math.round(data.rom_score)}% | Phase: ${data.movement_phase}</small>`;
+                    postureDiv.innerHTML += metricsHTML;
+                }
+            }
+        }
+
+        if(data.stop){
+            stopCamera();
+            
+            // Redirect based on response
+            if (data.redirect === "workout_report_list") {
+                window.location.href = "{% url 'workout_report_list' %}";
+            } else if (data.id) {
+                window.location.href = `/workout_result/${data.id}/`;
+            } else {
+                window.location.href = "{% url 'workout_report_list' %}";
+            }
+        }
+    } catch (error) {
+        console.error('Capture error:', error);
+    } finally {
+        isProcessing = false;
+    }
+}
+
+function stopCamera(){
+    clearInterval(captureInterval);
+    active = false;
+
+    if(stream){
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+    }
+
+    video.classList.remove('active');
+    overlayCanvas.classList.remove('active');
+    
+    // Clear overlay canvas
+    const ctx = overlayCanvas.getContext('2d');
+    ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    
+    startBtn.disabled = selectedWorkout ? false : true;
+    workoutSelect.disabled = false;
+    setsInput.disabled = false;
+    repsInput.disabled = false;
+    durationInput.disabled = false;
+    restInput.disabled = false;
+    stopBtn.style.display = "none";
+    postureDiv.innerText = "";
+}
+</script>
+
+</body>
+</html>
